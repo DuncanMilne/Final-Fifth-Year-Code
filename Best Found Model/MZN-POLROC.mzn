@@ -11,14 +11,12 @@ array[1..n*n] of var bool: grid;
 constraint grid[1] = false;
 constraint grid[(n*n)-n+1] = false;
 constraint sum([grid[(i*n)-n+1]  | i in 2..(n-1)]) > 0;
-% must be leq than n*n - n obs. in a 3x3 any grid with more than 6 obstacles is impossible
-constraint sum([grid[i]  | i in 2..(n*n)]) <= (n*n)-n;
-%alternatively constraint there to be N obs
-%int: obs;
-%constraint sum([grid[i] | i in 2..(n*n)]) = obs;
+
+%constrain there to be precise num of obs
 int: obs;
 constraint sum([grid[i] | i in 2..(n*n)]) = obs;
 
+%limit rows and columns
 constraint forall(i in 1..n) (
   sum([grid[j]  | j in (i*n) - n +1..n*i]) < 4
 );
@@ -26,10 +24,6 @@ constraint forall(i in 1..n) (
 constraint forall(i in 1..n) (
    sum([grid[j] | j in ((i-1)*n)+1..(n)*i]) < 4
 );
-%keep incase
-%constraint forall(i in 1..n) (
-%  sum([grid[j]  | j in ((i-1)*n)+1..(n)*i]) < (n - (n/3))
-%);
 % ========================================================= %
 
 
@@ -138,10 +132,10 @@ constraint forall(i in N) (
 );
 
 %one move per timestep 
-%THIS IS A NECESSARY CONSTRAINT
 constraint forall(k in 1..ub) (
   sum([bool2int(decisions[i,j,k]) | i in 1..n, j in 1..n]) = 1
 );
+
 %all decisions leq 1 - if moving to end cell
 constraint forall(k in 1..ub) (
   forall(i in 1..n) (
